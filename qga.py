@@ -79,7 +79,6 @@ def bestPop(newPops):
 def selectedPop(pops,cap):
     selected = []
     for pop in pops:
-        print(calcWg(pop))
         if calcWg(pop)<=cap and calcWg(pop)!=0 and pop not in selected:
             selected.append(pop)
     return selected
@@ -117,37 +116,49 @@ def qgate(pop,best,delta_theta):
                     c[i][1] = c[i][1]+delta_theta
 
 
-def qgenetic_main(pop,cap,NCMax,benda):
-    NC = 0
-    best = [random.randint(0,1) for i in range(len(pop[0]))]
-    while NC<NCMax:
-        MR = (random.uniform(0,1)+0.2)/len(pop[0])/10
-        print(MR)
-        delta_theta = 3.14/15*random.uniform(0,1)+3.14/20
-        #crossover
-        for c in pop:
-            r = random.uniform(0,1)
-            if r<=CP:
-                selected = []
-                for i in range(2):
-                    selected.append(random.sample([i for i in range(len(pop))],1)[0])
-                pop.append(crossover(pop[selected[0]],pop[selected[1]]))
-        
-        #mutation
-        for c in pop:
-            for qb in c:
-                r = random.uniform(0,1)
-                if r<=MR:
-                    qb[0],qb[1] = qb[1],qb[0]
-        
-        qgate(pop,best,delta_theta)
-        classic = selectedPop(measure(pop),cap)
-        hasil = bestPop(classic)
-        best = hasil[0]
-        NC+=1
-    return hasil
-        
+def qgenetic_main(npop,cap,NCMax,benda):
+    
+    while True:
+        NC = 0
+        pop = generatePop(benda,npop)
+        best = [random.randint(0,1) for i in range(len(pop[0]))]
+        conv=0
+        try:
+            while NC<NCMax or conv==3:
+                MR = (random.uniform(0,1)+0.2)/len(pop[0])/10
+                delta_theta = 3.14/15*random.uniform(0,1)+3.14/20
+                #crossover
+                for c in pop:
+                    r = random.uniform(0,1)
+                    if r<=CP:
+                        selected = []
+                        for i in range(2):
+                            selected.append(random.sample([i for i in range(len(pop))],1)[0])
+                        pop.append(crossover(pop[selected[0]],pop[selected[1]]))
+                
+                #mutation
+                for c in pop:
+                    for qb in c:
+                        r = random.uniform(0,1)
+                        if r<=MR:
+                            qb[0],qb[1] = qb[1],qb[0]
+                
+                qgate(pop,best,delta_theta)
+                classic = selectedPop(measure(pop),cap)
+                hasil = bestPop(classic)
+                if best==hasil:
+                    conv+=1
+                else:
+                    conv=0
+                best = hasil[0]
+                NC+=1
+            return hasil
+            break
+        except Exception as e:
+            npop+=1
+            pass
 
+    
 def decode(chromosome,benda):
     hasil = []
     for i,v in enumerate(benda.keys()):
@@ -162,12 +173,10 @@ benda = {'sepatu': [20, 10], 'buah': [20, 10],'odol':[2,11],'sikat gigi':[20,1],
 
 
 CP = 0.25
+NCMax = 10
 
-NCMax = 10     
-
-pop = generatePop(benda,1000)
 t1 = time.time()
-b1,k1,w1 = qgenetic_main(pop,50,NCMax,benda)
+b1,k1,w1 = qgenetic_main(10,50,NCMax,benda)
 t2 = time.time()
 print(decode(b1,benda))
 print(calcWg(b1))

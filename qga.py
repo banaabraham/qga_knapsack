@@ -2,13 +2,14 @@ import random
 import time
 import math
 
-
+#using two points crossove
 def crossover(c1,c2):
     r = random.randint(1,len(c1))
     c1 = c1[:r]
     c2 = c2[r:]
     return c1+c2
 
+#generate random qubit population
 def generatePop(benda,n):
     pop = []
     for i in range(n):
@@ -29,7 +30,7 @@ def generatePop(benda,n):
         pop.append(c)
     return pop
 
-            
+#convert qubit into classical bit            
 def measure(pop):
     classic = []
     for i in pop:
@@ -43,6 +44,7 @@ def measure(pop):
         classic.append(c)
     return classic
 
+#calculate value from chromosome
 def calcVal(pop):
     totalVal = 0
     for i,k in enumerate(benda.keys()):
@@ -50,6 +52,7 @@ def calcVal(pop):
             totalVal+=benda[k][0]
     return totalVal
 
+#calculate weight from chromosome
 def calcWg(pop):
     totalWg = 0
     for i,k in enumerate(benda.keys()):
@@ -57,9 +60,11 @@ def calcWg(pop):
             totalWg+=benda[k][1]      
     return totalWg
 
+#calculate fitness of chromosome
 def calcFit(pop):
     return calcVal(pop)/2*calcWg(pop)
 
+#select the best chromosome according to its fitness
 def bestPop(newPops):
     bestFit=0
     bestChild = []
@@ -76,6 +81,7 @@ def bestPop(newPops):
                 bestChild=i
     return bestChild,bestFit,kamus_best 
 
+#select chromosome that satisfy the weight cap
 def selectedPop(pops,cap):
     selected = []
     for pop in pops:
@@ -83,6 +89,7 @@ def selectedPop(pops,cap):
             selected.append(pop)
     return selected
 
+#qgate rotation
 def qgate(pop,best,delta_theta):
     for c in pop:
         for i in range(len(c)):
@@ -171,8 +178,9 @@ benda = {'sepatu': [20, 10], 'buah': [20, 10],'odol':[2,11],'sikat gigi':[20,1],
              ,'sabun':[50,10],'minuman':[10,50],'sambel':[5,10],'makanan ringan':[70,10],\
              'yet':[20,12],'another':[2,4],'rumah':[10,1000],'genting':[50,10],'sesuatu':[90,50]}
 
-
+#crossoper rate
 CP = 0.25
+#max iteration 
 NCMax = 10
 
 t1 = time.time()

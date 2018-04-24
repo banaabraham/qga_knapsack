@@ -122,6 +122,12 @@ def qgate(pop,best,delta_theta):
                     c[i][0] = c[i][0]-delta_theta
                     c[i][1] = c[i][1]+delta_theta
 
+def aqgate(pop,best,delta_theta):
+    for c in pop:
+        for i in range(len(c)):
+            c[i][0] = c[i][0]*math.cos(math.degrees(delta_theta))-c[i][1]*math.sin(math.degrees(delta_theta))
+            c[i][1] = math.sqrt(1-c[i][0]**2)
+            print(c[i])
 
 def qgenetic_main(npop,cap,NCMax,benda):
     
